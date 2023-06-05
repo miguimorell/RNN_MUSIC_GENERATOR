@@ -30,11 +30,14 @@ def load_songs(dataset_path):
 
 def create_encoded_files(songs,files_name):
     for song,file_name in zip(songs,files_name):
-        encoded_song=encode_song(song)
+        encoded_song,encoded_velocity=encode_song(song)
         # save songs to text file
         save_path = os.path.join(ENCODED_PATH, file_name)
         with open(save_path, "w") as fp:
             fp.write(encoded_song)
+            fp.write('\n')
+            fp.write(encoded_velocity)
+
 
 
 def main():

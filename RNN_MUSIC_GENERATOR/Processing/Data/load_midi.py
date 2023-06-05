@@ -13,16 +13,18 @@ def encode_song(song, time_step=0.25):
     """
 
     encoded_song = []
+    encoded_velocity = []
 
     for event in song.flat.notesAndRests:
 
         # handle notes
         if isinstance(event, m21.note.Note):
             symbol = event.pitch.midi # 60
+            vel = event.volume.velocity
         # handle rests
         elif isinstance(event, m21.note.Rest):
             symbol = "r"
-
+            vel = 0
         # convert the note/rest into time series notation
         steps = int(event.duration.quarterLength / time_step)
         for step in range(steps):
@@ -31,10 +33,12 @@ def encode_song(song, time_step=0.25):
             # symbol in a new time step
             if step == 0:
                 encoded_song.append(symbol)
+                encoded_velocity.append(vel)
             else:
                 encoded_song.append("_")
+                encoded_velocity.append("-")
 
     # cast encoded song to str
     encoded_song = " ".join(map(str, encoded_song))
-
-    return encoded_song
+    encoded_velocity = " ".join(map(str, encoded_velocity))
+    return encoded_song,encoded_velocity
