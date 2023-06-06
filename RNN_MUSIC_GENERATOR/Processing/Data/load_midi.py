@@ -36,7 +36,7 @@ def encode_song(song, time_step=0.25):
                 encoded_velocity.append(vel)
             else:
                 encoded_song.append("_")
-                encoded_velocity.append("-")
+                encoded_velocity.append("_")
 
     # cast encoded song to str
     encoded_song = " ".join(map(str, encoded_song))

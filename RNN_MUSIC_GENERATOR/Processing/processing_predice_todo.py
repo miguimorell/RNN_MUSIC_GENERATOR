@@ -157,19 +157,17 @@ def generate_training_sequences(mapped_songs,sequence_length):
     print(len(mapped_songs[0]))
     num_sequences = length - sequence_length
     #print('Number of sequences:',num_sequences)
-    for i in range(num_sequences):
-       # print('i: ',i)
-        for line in mapped_songs[-6:]:
+    for i in range(1):
+        print('i: ',i)
+        for line in mapped_songs:
             if i not in inputs: #initialize the key
                 inputs[i] = []
+                targets[i] = []
             #print('X: ',line[i:i + sequence_length])
             #print('y: ',line[i + sequence_length])
             inputs[i].append(line[i:i + sequence_length])
+            targets[i].append(line[i + sequence_length])
 
-        for line in mapped_songs[:2]:
-            if i not in targets: #initialize the key
-                targets[i] = []
-            targets[i].append(line[i:i + sequence_length])
 
     # one-hot encode the sequences
     # load mappings
@@ -191,8 +189,7 @@ def generate_training_sequences(mapped_songs,sequence_length):
 
         inputs[key] = np.array(encoded_sequences)
 
-    for key in targets:
-        targets[key] = np.array(targets[key])
+    targets = np.array(targets)
 
     return inputs, targets
 
@@ -235,21 +232,8 @@ def main():
     print('-----')
     inputs,targets = generate_training_sequences(mapped_songs,SEQUENCE_LENGTH)
 
-    print(inputs[0])
-    print(targets[0])
-
-    save_path = os.path.join(ENCODED_PATH_INT, 'FEATURES.txt')
-    with open(save_path, "w") as fp:
-        for key,values in inputs.items():
-            fp.write(str(values))
-            print(str(values))
-            fp.write('\n')
-
-    save_path = os.path.join(ENCODED_PATH_INT, 'TARGETS')
-    with open(save_path, "w") as fp:
-        for key,values in targets.items():
-            fp.write(str(values))
-            fp.write('\n')
+    #print(inputs.shape)
+    #print(targets.shape)
 
 if __name__ == "__main__":
     main()
