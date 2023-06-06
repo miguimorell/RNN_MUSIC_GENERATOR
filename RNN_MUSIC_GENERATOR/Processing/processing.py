@@ -238,18 +238,19 @@ def main():
     print(inputs[0])
     print(targets[0])
 
-    save_path = os.path.join(ENCODED_PATH_INT, 'FEATURES.txt')
-    with open(save_path, "w") as fp:
-        for key,values in inputs.items():
-            fp.write(str(values))
-            print(str(values))
-            fp.write('\n')
+    #np.set_printoptions(threshold=np.inf)
+    #save_path = os.path.join(ENCODED_PATH_INT, 'FEATURES.txt')
+    #with open(save_path, "w") as fp:
+    #    for key,values in inputs.items():
+    #        fp.write(str(values))
+    #        print(str(values))
+    #    fp.write('\n')
 
-    save_path = os.path.join(ENCODED_PATH_INT, 'TARGETS')
-    with open(save_path, "w") as fp:
-        for key,values in targets.items():
-            fp.write(str(values))
-            fp.write('\n')
+    #save_path = os.path.join(ENCODED_PATH_INT, 'TARGETS')
+    #with open(save_path, "w") as fp:
+    #    for key,values in targets.items():
+    #        fp.write(str(values))
+    #        fp.write('\n')
 
 if __name__ == "__main__":
     main()
