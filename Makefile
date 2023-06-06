@@ -1,4 +1,3 @@
-
 default: pytest
 
 # default: pylint pytest
