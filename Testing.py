@@ -1,11 +1,6 @@
 
 from music21 import converter, instrument, note, stream
 
-
-
-
-from music21 import converter, instrument
-
 def process_midi_file(midi_file_path):
     # Cargar el archivo MIDI
     midi = converter.parse(midi_file_path)
