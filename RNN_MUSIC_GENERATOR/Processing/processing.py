@@ -196,7 +196,7 @@ def generate_training_sequences(mapped_songs,sequence_length):
 
     return inputs, targets
 
-def main():
+def process_data():
 
     songs,files_name = load_songs(DATASET_PATH)
 
@@ -251,4 +251,4 @@ def main():
     #        fp.write('\n')
 
 if __name__ == "__main__":
-    main()
+    process_data()

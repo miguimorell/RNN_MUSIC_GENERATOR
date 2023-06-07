@@ -1,0 +1,1 @@
+from RNN_MUSIC_GENERATOR.Processing.processing import process_data, SEQUENCE_LENGTH
