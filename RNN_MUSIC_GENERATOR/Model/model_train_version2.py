@@ -5,7 +5,8 @@ from keras.layers import  LSTM, Dense, Dropout
 from keras.models import Model
 from keras.callbacks import EarlyStopping
 from keras.optimizers import Adam
-from RNN_MUSIC_GENERATOR.Processing.processing import main, SEQUENCE_LENGTH
+from RNN_MUSIC_GENERATOR.Processing.processing import process_data, SEQUENCE_LENGTH
+from RNN_MUSIC_GENERATOR.Processing.convert_dictionary import convert_dictionary
 
 OUTPUT_UNITS = 54 #change for ours
 NUM_UNITS = [256] #check if is not too much??!!
@@ -54,7 +55,10 @@ def train(output_units=OUTPUT_UNITS, num_units=NUM_UNITS, loss=LOSS, learning_ra
     :param learning_rate (float): Learning rate to apply
     """
     # generate the training sequences
-    X_train, y_train = main()
+    inputs, targets = process_data()
+
+    X_train = convert_dictionary(inputs)
+    y_train = convert_dictionary(targets)
 
     # build the network
     model = init_model(output_units, num_units, loss, learning_rate)
