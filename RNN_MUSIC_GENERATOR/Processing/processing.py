@@ -154,7 +154,6 @@ def generate_training_sequences(mapped_songs,sequence_length):
 
     # generate the training sequences
     length = len(mapped_songs[0])
-    print(len(mapped_songs[0]))
     num_sequences = length - sequence_length
     #print('Number of sequences:',num_sequences)
     for i in range(num_sequences):
@@ -177,7 +176,6 @@ def generate_training_sequences(mapped_songs,sequence_length):
         mappings = json.load(fp)
 
     vocabulary_size = len(mappings.keys())
-    print(vocabulary_size)
 
     for key in inputs:
         sequences = inputs[key]
