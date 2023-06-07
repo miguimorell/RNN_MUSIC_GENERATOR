@@ -1,6 +1,6 @@
 import os
 import music21 as m21
-from Data.load_midi import encode_song
+from RNN_MUSIC_GENERATOR.Processing.Data.load_midi import encode_song
 import glob
 import json
 import keras
@@ -11,10 +11,10 @@ MIDI FILES GIVES ME THE FOLLOWING INFORMATION:
 NOTA:C4 , DURATION: 0.25s, VELOCIDAD: 125
 SILENCIO: , DURATION:
 '''
-DATASET_PATH = '/Users/Cris/code/miguimorell/RNN_MUSIC_GENERATOR/raw_data'
-ENCODED_PATH = '/Users/Cris/code/miguimorell/RNN_MUSIC_GENERATOR/RNN_MUSIC_GENERATOR/Processing/Data/encoded'
-ENCODED_PATH_INT = '/Users/Cris/code/miguimorell/RNN_MUSIC_GENERATOR/RNN_MUSIC_GENERATOR/Processing/Data/encoded'
-MAPPING_PATH = '/Users/Cris/code/miguimorell/RNN_MUSIC_GENERATOR/RNN_MUSIC_GENERATOR/Processing/Data/mapping.json'
+DATASET_PATH = os.environ.get("DATASET_PATH")
+ENCODED_PATH = os.environ.get("ENCODED_PATH")
+ENCODED_PATH_INT = os.environ.get("ENCODED_PATH_INT")
+MAPPING_PATH = os.environ.get("MAPPING_PATH")
 SEQUENCE_LENGTH = 128
 
 
@@ -234,9 +234,7 @@ def main():
     print(len(mapped_songs[7]))
     print('-----')
     inputs,targets = generate_training_sequences(mapped_songs,SEQUENCE_LENGTH)
-
-    print(inputs[0])
-    print(targets[0])
+    return inputs,targets
 
     #np.set_printoptions(threshold=np.inf)
     #save_path = os.path.join(ENCODED_PATH_INT, 'FEATURES.txt')
