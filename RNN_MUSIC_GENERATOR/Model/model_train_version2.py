@@ -3,6 +3,7 @@ import os
 from tensorflow import keras
 from keras.layers import  LSTM, Dense, Dropout, SimpleRNN
 from keras.models import Model, Sequential
+from keras.layers import Dense, Dropout, Reshape
 from keras.callbacks import EarlyStopping
 from keras.optimizers import Adam
 from RNN_MUSIC_GENERATOR.Processing_NEW.processing import process_data, SEQUENCE_LENGTH
@@ -52,6 +53,7 @@ def train(loss=LOSS, learning_rate=LEARNING_RATE):
     :param loss (str): Type of loss function to use
     :param learning_rate (float): Learning rate to apply
     """
+
     # generate the training sequences
     X_train, y_train,X_test,y_test = process_data()
 
@@ -80,7 +82,6 @@ def train(loss=LOSS, learning_rate=LEARNING_RATE):
     model.save(SAVE_MODEL_PATH)
 
     return model,X_test,y_test
-
 
 if __name__ == "__main__":
 
