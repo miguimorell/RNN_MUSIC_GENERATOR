@@ -34,6 +34,7 @@ def init_model(output_units, num_units, loss, learning_rate,shape):
 #     """
     # create the model architecture
     input = keras.layers.Input(shape=shape)
+    #flatten = keras.layers.Flatten
     x = keras.layers.TimeDistributed(LSTM(NUM_UNITS,return_sequences=True))(input)
     #x = keras.layers.LSTM(num_units[0])(input)
     #x = keras.layers.Dropout(0.2)(x)
