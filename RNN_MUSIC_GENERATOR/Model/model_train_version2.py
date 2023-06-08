@@ -9,7 +9,10 @@ from RNN_MUSIC_GENERATOR.Processing_NEW.processing import process_data, SEQUENCE
 
 OUTPUT_UNITS = 2 #change for ours
 NUM_UNITS = 54 #check if is not too much??!!
-LOSS = "mean_squared_error" #check
+LOSS = {
+    'base': "mean_squared_error", #check,
+    'velocity': "mean_squared_error" #check,
+    }
 LEARNING_RATE = 0.001 #check if should do a GridSearch
 EPOCHS = 50 #check
 BATCH_SIZE = 64 #Check
@@ -33,15 +36,17 @@ def init_model(output_units, num_units, loss, learning_rate,shape):
     #x = keras.layers.LSTM(num_units[0])(input)
     #x = keras.layers.Dropout(0.2)(x)
 
-    output = keras.layers.TimeDistributed(Dense(2))(x)
-
+    output = {
+        'base': keras.layers.TimeDistributed(Dense(1, name = 'base'))(x),
+        'velocity': keras.layers.TimeDistributed(Dense(1, name = 'velocity'))(x)
+    }
 
     model = keras.Model(input, output)
 
     # compile model
     model.compile(loss=loss,
                   optimizer=Adam(learning_rate=learning_rate),
-                  metrics=["accuracy"])
+                  metrics=["mae"])
 
     return model
 
