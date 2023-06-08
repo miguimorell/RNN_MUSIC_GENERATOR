@@ -21,16 +21,23 @@ def generate_training_sequences(mapped_songs,sequence_length,mapping_path):
     for i in range(num_sequences):
        # print('i: ',i)
         for line in mapped_songs[-6:]:
+            line_to_read = line[i:i + sequence_length]
+            if 1 in line_to_read:
+                continue
             if i not in inputs: #initialize the key
                 inputs[i] = []
             #print('X: ',line[i:i + sequence_length])
             #print('y: ',line[i + sequence_length])
-            inputs[i].append(line[i:i + sequence_length])
+            inputs[i].append(line_to_read)
 
         for line in mapped_songs[:2]:
+            line_to_read = line[i:i + sequence_length]
+            if 1 in line_to_read:
+                continue
             if i not in targets: #initialize the key
                 targets[i] = []
-            targets[i].append(line[i:i + sequence_length])
+
+            targets[i].append(line_to_read)
 
     # one-hot encode the sequences
     # load mappings
