@@ -1,16 +1,28 @@
+import numpy as np
+
 def convert_dictionary(variable):
 
-    sequences = []
+    kick = []
+    vkick = []
+    sn = []
+    vsn = []
+    hh = []
+    vhh = []
     for keys, values in variable.items():
-        print(keys)
-        print(values)
         for position in range(0,128):
-            sequence = []
-            for value in values:
-                #print('-------')
+            for ind, value in enumerate(values):
+                #print(ind, '-------')
                 #print(value[position])
-                sequence.append(value[position])
+                kick.append(value[position])
+                vkick.append(value[position])
+                sn.append(value[position])
+                vsn.append(value[position])
+                hh.append(value[position])
+                vhh.append(value[position])
                 #print('-------')
-            sequences.append(sequence)
 
-    print(sequences[0])
+    #print(sequence[0])
+    #print(sequences)
+    output = np.array([kick,vkick,sn,vsn,hh,vhh]).astype(np.int16)
+    print (output.shape)
+    return output
