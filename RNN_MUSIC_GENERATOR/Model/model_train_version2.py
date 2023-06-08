@@ -5,13 +5,14 @@ from keras.layers import  LSTM, Dense, Dropout
 from keras.models import Model, Sequential
 from keras.callbacks import EarlyStopping
 from keras.optimizers import Adam
-from RNN_MUSIC_GENERATOR.Processing.processing import process_data, SEQUENCE_LENGTH
-from RNN_MUSIC_GENERATOR.Processing.convert_dictionary import convert_dictionary
-import numpy as np
+from RNN_MUSIC_GENERATOR.Processing_NEW.processing import process_data, SEQUENCE_LENGTH
 
-OUTPUT_UNITS = 54 #change for ours
-NUM_UNITS = 256 #check if is not too much??!!
-LOSS = "sparse_categorical_crossentropy" #check
+OUTPUT_UNITS = 2 #change for ours
+NUM_UNITS = 54 #check if is not too much??!!
+LOSS = {
+    'base': "mean_squared_error", #check,
+    'velocity': "mean_squared_error" #check,
+    }
 LEARNING_RATE = 0.001 #check if should do a GridSearch
 EPOCHS = 50 #check
 BATCH_SIZE = 64 #Check
@@ -19,8 +20,10 @@ FEATURES = 6
 SAVE_MODEL_PATH = "model.a1" #change if we want different name
 
 
+def init_model(output_units, num_units, loss, learning_rate,shape):
+    """Builds and compiles model
 # #def init_model(output_units, num_units, loss, learning_rate,shape):
-#     """Builds and compiles model
+#     Builds and compiles model"""
 
 #     :param output_units (int): Num output units
 #     :param num_units (list of int): Num of units in hidden layers
@@ -29,13 +32,16 @@ SAVE_MODEL_PATH = "model.a1" #change if we want different name
 
 #     :return model (tf model)
 #     """
+    # create the model architecture
+    input = keras.layers.Input(shape=shape)
+    x = keras.layers.TimeDistributed(LSTM(NUM_UNITS,return_sequences=True))(input)
+    #x = keras.layers.LSTM(num_units[0])(input)
+    #x = keras.layers.Dropout(0.2)(x)
 
-#     # create the model architecture
-#     input = keras.layers.Input(shape=(shape))
-#     x = keras.layers.LSTM(num_units)(input)
-#     x = keras.layers.Dropout(0.2)(x)
-
-#     output = keras.layers.Dense(output_units, activation="softmax")(x)
+    output = {
+        'base': keras.layers.TimeDistributed(Dense(1, name = 'base'))(x),
+        'velocity': keras.layers.TimeDistributed(Dense(1, name = 'velocity'))(x)
+    }
 
 #     model = keras.Model(input, output)
 
@@ -56,8 +62,8 @@ def init_model(output_units, num_units, loss, learning_rate,shape):
 
     #compile model
     model.compile(loss=loss,
-                   optimizer=Adam(learning_rate=learning_rate),
-                   metrics=["accuracy"])
+                  optimizer=Adam(learning_rate=learning_rate),
+                  metrics=["mae"])
     return model
 
 
@@ -70,14 +76,14 @@ def train(output_units=OUTPUT_UNITS, num_units=NUM_UNITS, loss=LOSS, learning_ra
     :param learning_rate (float): Learning rate to apply
     """
     # generate the training sequences
-    inputs, targets = process_data()
-    X_train = convert_dictionary(inputs)
-    # Reshape X_train
-    print(X_train.shape)
-    y_train = convert_dictionary(targets)
+    X_train, y_train = process_data()
 
+    print('SHAPE X TRAIN')
+    print(X_train.shape)
     # build the network
-    model = init_model(output_units, num_units, loss, learning_rate,X_train.shape[1:])
+    #shape = (X_train.shape[1],X_train.shape[2:])
+    shape = X_train.shape[1:]
+    model = init_model(output_units, num_units, loss, learning_rate,shape)
     model.summary()
 
     # train the model
