@@ -7,16 +7,16 @@ from keras.callbacks import EarlyStopping
 from keras.optimizers import Adam
 from RNN_MUSIC_GENERATOR.Processing_NEW.processing import process_data, SEQUENCE_LENGTH
 
-OUTPUT_UNITS = 54 #change for ours
-NUM_UNITS = [256] #check if is not too much??!!
-LOSS = "sparse_categorical_crossentropy" #check
+OUTPUT_UNITS = 2 #change for ours
+NUM_UNITS = 54 #check if is not too much??!!
+LOSS = "mean_squared_error" #check
 LEARNING_RATE = 0.001 #check if should do a GridSearch
 EPOCHS = 50 #check
 BATCH_SIZE = 64 #Check
 SAVE_MODEL_PATH = "model.a1" #change if we want different name
 
 
-def init_model(output_units, num_units, loss, learning_rate):
+def init_model(output_units, num_units, loss, learning_rate,shape):
     """Builds and compiles model
 
     :param output_units (int): Num output units
@@ -28,11 +28,13 @@ def init_model(output_units, num_units, loss, learning_rate):
     """
 
     # create the model architecture
-    input = keras.layers.Input(shape=(None, output_units))
-    x = keras.layers.LSTM(num_units[0])(input)
-    x = keras.layers.Dropout(0.2)(x)
+    input = keras.layers.Input(shape=shape)
+    x = keras.layers.TimeDistributed(LSTM(NUM_UNITS,return_sequences=True))(input)
+    #x = keras.layers.LSTM(num_units[0])(input)
+    #x = keras.layers.Dropout(0.2)(x)
 
-    output = keras.layers.Dense(output_units, activation="softmax")(x)
+    output = keras.layers.TimeDistributed(Dense(2))(x)
+
 
     model = keras.Model(input, output)
 
@@ -56,8 +58,12 @@ def train(output_units=OUTPUT_UNITS, num_units=NUM_UNITS, loss=LOSS, learning_ra
     # generate the training sequences
     X_train, y_train = process_data()
 
+    print('SHAPE X TRAIN')
+    print(X_train.shape)
     # build the network
-    model = init_model(output_units, num_units, loss, learning_rate)
+    #shape = (X_train.shape[1],X_train.shape[2:])
+    shape = X_train.shape[1:]
+    model = init_model(output_units, num_units, loss, learning_rate,shape)
     model.summary()
 
     # train the model

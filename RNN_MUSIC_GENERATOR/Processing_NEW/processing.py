@@ -7,7 +7,7 @@ from RNN_MUSIC_GENERATOR.Processing_NEW.load_encoded_songs import load_encoded_s
 from RNN_MUSIC_GENERATOR.Processing_NEW.create_mapping import create_mapping
 from RNN_MUSIC_GENERATOR.Processing_NEW.map_file import map_file
 from RNN_MUSIC_GENERATOR.Processing_NEW.generate_training_data import generate_training_sequences
-from RNN_MUSIC_GENERATOR.Processing_NEW.convert_dictionary import convert_dictionary
+from RNN_MUSIC_GENERATOR.Processing_NEW.convert_dictionary import convert_dictionary_x,convert_dictionary_y
 
 '''
 MIDI FILES GIVES ME THE FOLLOWING INFORMATION:
@@ -71,10 +71,21 @@ def process_data():
     print('SECUENCIA 0, OBSERVACION 0')
     print(inputs[0][0])
     print(inputs[0][0].shape)
-    X_train = convert_dictionary(inputs)
-    #y_train = convert_dictionary(targets)
 
-    #return X_train,y_train
+    print('KEYS')
+    print(len(targets))
+    print('SECUENCIA 0')
+    print(targets[0])
+    print(targets[0].shape)
+    print('SECUENCIA 0, OBSERVACION 0')
+    print(targets[0][0])
+    print(targets[0][0].shape)
+    X_train = convert_dictionary_x(inputs)
+    print('TRAIN SHAPE')
+    print(X_train.shape)
+    y_train = convert_dictionary_y(targets)
+
+    return X_train,y_train
 
     #np.set_printoptions(threshold=np.inf)
     #save_path = os.path.join(ENCODED_PATH_INT, 'FEATURES.txt')
