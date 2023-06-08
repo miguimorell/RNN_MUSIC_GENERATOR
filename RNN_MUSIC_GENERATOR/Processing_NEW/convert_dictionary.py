@@ -19,6 +19,8 @@ def convert_dictionary_x(dictionary):
 
 def convert_dictionary_x(dictionary):
 
+    #print(dictionary)
+    #sprint(len(dictionary))
     sequences = list(dictionary.values())
     train_data = np.array(sequences)
     # Rearrange the dimensions of the array

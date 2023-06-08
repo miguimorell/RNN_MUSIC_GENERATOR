@@ -11,7 +11,7 @@ file_name= ''
 class MelodyGenerator:
     """A class that wraps the LSTM model and offers utilities to generate melodies."""
 
-    def __init__(self, model_path="model.h5"):
+    def __init__(self, model_path="model.a1"):
         """Constructor that initialises TensorFlow model"""
 
         self.model_path = model_path

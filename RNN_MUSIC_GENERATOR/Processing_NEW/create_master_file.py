@@ -3,7 +3,7 @@ import glob
 
 def create_master_file(sequence_length,encoded_path):
     # Define the prefix for each group of files
-    prefixes = ['BS', 'CK', 'HH', 'SN']
+    prefixes = ['BS', 'CK', 'CH', 'SN']
     save_path = os.path.join(encoded_path, 'Master_File')
     delimeter = '/ ' * (sequence_length)
 

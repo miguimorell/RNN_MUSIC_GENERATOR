@@ -17,4 +17,5 @@ def load_songs(dataset_path):
                 song = m21.converter.parse(os.path.join(path, file))
                 songs.append(song)
                 files_name.append(file[-9:-4])
+                print(f'{file[-9:-4]} Song Loaded')
     return songs,files_name
