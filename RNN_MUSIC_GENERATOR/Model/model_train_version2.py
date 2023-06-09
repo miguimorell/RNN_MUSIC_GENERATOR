@@ -6,7 +6,7 @@ from keras.models import Model, Sequential
 from keras.layers import Dense, Dropout, Reshape
 from keras.callbacks import EarlyStopping
 from keras.optimizers import Adam
-from RNN_MUSIC_GENERATOR.Processing_NEW.processing import process_data, SEQUENCE_LENGTH
+from Processing_NEW.processing import process_data, SEQUENCE_LENGTH
 import numpy as np
 
 #OUTPUT_UNITS = 2 #change for ours
@@ -44,6 +44,7 @@ def init_model(num_units, loss, learning_rate,shape_1,shape_2):
                   optimizer=Adam(learning_rate=learning_rate),
                   metrics=["accuracy"])
     return model
+
 
 def train(loss=LOSS, learning_rate=LEARNING_RATE):
     """Train and save TF model.

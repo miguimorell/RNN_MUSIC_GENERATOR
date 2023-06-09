@@ -18,3 +18,6 @@ install_requirements:
 # ----------------------------------
 #         HEROKU COMMANDS
 # ----------------------------------
+
+run_upload:
+	python -c 'from RNN_MUSIC_GENERATOR.Interface.main import upload_model; upload_model()'

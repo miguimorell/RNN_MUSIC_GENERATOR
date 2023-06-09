@@ -1,12 +1,12 @@
-import pandas as pd
+import numpy as np
 from RNN_MUSIC_GENERATOR.registry import load_model
-from RNN_MUSIC_GENERATOR.Processing_NEW.processing impo
+from RNN_MUSIC_GENERATOR.Processing_NEW.processing import process_data #check the processing function
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
-app.state.model = load_model(stage= 'Production')
+app.state.model = load_model(model_origin='mlflow')
 
 # Allowing all middleware is optional, but good practice for dev purposes
 app.add_middleware(
@@ -19,32 +19,20 @@ app.add_middleware(
 
 # http://127.0.0.1:8000/predict?pickup_datetime=2012-10-06 12:10:20&pickup_longitude=40.7614327&pickup_latitude=-73.9798156&dropoff_longitude=40.6513111&dropoff_latitude=-73.8803331&passenger_count=2
 @app.get("/predict")
-def predict(
-        pickup_datetime: str,  # 2013-07-06 17:18:00
-        pickup_longitude: float,    # -73.950655
-        pickup_latitude: float,     # 40.783282
-        dropoff_longitude: float,   # -73.984365
-        dropoff_latitude: float,    # 40.769802
-        passenger_count: int        # 1
-    ):
+def predict():
     """
-    Make a single course prediction.
-    Assumes `pickup_datetime` is provided as a string by the user in "%Y-%m-%d %H:%M:%S" format
-    Assumes `pickup_datetime` implicitly refers to the "US/Eastern" timezone (as any user in New York City would naturally write)
+    Make a single bass song prediction.
+
     """
-    X_pred = pd.DataFrame(locals(), index=[0])
-
-    # Convert to US/Eastern TZ-aware!
-    X_pred['pickup_datetime'] = pd.Timestamp(pickup_datetime, tz='US/Eastern')
-
     model = app.state.model
-    X_processed = preprocess_features(X_pred)
-    y_pred = model.predict(X_processed)
+    X_pred= #streamlit data
+    X_processed_pred = process_data(X_pred) #ADD OUR FUNCTION
+    y_pred = model.predict(X_processed_pred) #ADD
 
     # ⚠️ fastapi only accepts simple Python data types as a return value
     # among them dict, list, str, int, float, bool
     # in order to be able to convert the api response to JSON
-    return dict(fare_amount=float(y_pred))
+    return dict('song'=(y_pred))
 
 
 @app.get("/")
