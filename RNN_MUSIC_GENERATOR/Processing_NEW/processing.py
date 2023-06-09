@@ -75,14 +75,29 @@ def process_data():
     y = convert_dictionary_y(targets)
 
     #split the data into training,validating and testing
+    len_data = X.shape[0]
 
-    X_train = X[:-10,:,:]
-    y_train = y[:-10,:,:]
+    print(f'Total LEN:{len_data}')
 
-    X_test = X[-10:,:,:]
-    y_test = y[-10:,:,:]
+    X_train = X[:-20,:,:]
+    y_train = y[:-20,:,:]
 
-    return X_train,y_train,X_test,y_test
+    X_test = X[-20:-10,:,:]
+    y_test = y[-20:-10,:,:]
+
+    X_val = X[-10:,:,:]
+    y_val = y[-10:,:,:]
+
+    print(f'X_train:{X_train.shape}')
+    print(f'y_train:{y_train.shape}')
+
+    print(f'X_test:{X_test.shape}')
+    print(f'y_test:{y_test.shape}')
+
+    print(f'X_val:{X_val.shape}')
+    print(f'y_val:{y_val.shape}')
+
+    return X_train,y_train,X_test,y_test,X_val,y_val
 
 if __name__ == "__main__":
     process_data()

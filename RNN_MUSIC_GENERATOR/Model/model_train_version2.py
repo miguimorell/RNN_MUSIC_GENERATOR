@@ -41,7 +41,7 @@ def train(loss=LOSS, learning_rate=LEARNING_RATE):
     :param learning_rate (float): Learning rate to apply
     """
     # generate the training sequences
-    X_train, y_train,X_test,y_test = process_data()
+    X_train, y_train,X_test,y_test,X_val,y_val = process_data()
 
     print('SHAPE X TRAIN')
     print(X_train.shape)
@@ -65,10 +65,11 @@ def train(loss=LOSS, learning_rate=LEARNING_RATE):
     model.summary()
 
     # train the model
-    es = EarlyStopping(patience=10, restore_best_weights=True)
+    es = EarlyStopping(patience=10,restore_best_weights=True)
 
     model.fit(X_train, y_train,
               epochs=EPOCHS,
+              validation_data=(X_val,y_val),
               batch_size=BATCH_SIZE,
               callbacks=[es])
 
@@ -82,11 +83,11 @@ def train(loss=LOSS, learning_rate=LEARNING_RATE):
 if __name__ == "__main__":
 
     #if the model is not trained
-    #model,X_test,y_test= train()
+    model,X_test,y_test= train()
 
     #if the model is trained
-    model = keras.models.load_model(SAVE_MODEL_PATH)
-    X_train, y_train,X_test,y_test = process_data()
+   # model = keras.models.load_model(SAVE_MODEL_PATH)
+    #X_train, y_train,X_test,y_test,X_val,y_val = process_data()
 
     #make prediction
     y_pred = model.predict(X_test)
