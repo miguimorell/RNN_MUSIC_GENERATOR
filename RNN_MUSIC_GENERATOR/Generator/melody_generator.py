@@ -3,15 +3,21 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 import music21 as m21
-from preprocess import SEQUENCE_LENGTH, MAPPING_PATH
+from RNN_MUSIC_GENERATOR.Processing_NEW.user_input_processing import translate_input
+from RNN_MUSIC_GENERATOR.Generator.mapping_seed import map_seed
+import os
+DATASET_PATH = os.environ.get("DATASET_PATH")
+ENCODED_PATH = os.environ.get("ENCODED_PATH")
+ENCODED_PATH_INT = os.environ.get("ENCODED_PATH_INT")
+MAPPING_PATH = os.environ.get("MAPPING_PATH")
+SEQUENCE_LENGTH = 32
 
 
-file_name= ''
 
 class MelodyGenerator:
     """A class that wraps the LSTM model and offers utilities to generate melodies."""
 
-    def __init__(self, model_path="model.a1"):
+    def __init__(self, model_path="model.h5"):
         """Constructor that initialises TensorFlow model"""
 
         self.model_path = model_path
@@ -26,8 +32,7 @@ class MelodyGenerator:
 
 
 
-
-    def generate_melody(self, seed, num_steps, max_sequence_length, temperature):
+    def generate_melody(self, user_input, temperature):
         """Generates a melody using the DL model and returns a midi file.
 
         :param seed (str): Melody seed with the notation used to encode the dataset
@@ -39,43 +44,49 @@ class MelodyGenerator:
         :return melody (list of str): List with symbols representing a melody
         """
 
-        # create seed with start symbols
-        #seed = seed.split()
-        #melody = seed
-        seed = self._start_symbols + seed
+        #Change from FALSE/TRUE to r,_,45,_
+        seed=translate_input(user_input)
 
-        # map seed to int
-        seed = [self._mappings[symbol] for symbol in seed]
+        #Mapping seed
+        seed_mapped=map_seed(seed)
 
-        for _ in range(num_steps):
 
-            # limit the seed to max_sequence_length
-            seed = seed[-max_sequence_length:]
+        #OneHotEncode AND RESHAPE seeds
+        #OHE seeds
+        seed_ohe=[[],[],[]]
+        for index,instrument in enumerate(seed_mapped):
+            for element in instrument:
+                seed_ohe[index].append(keras.utils.to_categorical(element,num_classes=len(self._mappings), dtype="int32"))
+        seed_ohe=np.array([seed_ohe])
 
-            # one-hot encode the seed
-            onehot_seed = keras.utils.to_categorical(seed, num_classes=len(self._mappings))
-            # (1, max_sequence_length, num of symbols in the vocabulary)
-            onehot_seed = onehot_seed[np.newaxis, ...]
+        #RESHAPE
+        seed_ohe=np.transpose(seed_ohe,(0,2,1,3))
+        d0,d1,d2,d3=seed_ohe.shape
+        seed_ohe=np.reshape(seed_ohe,(d0,d1,d2*d3))
 
-            # make a prediction
-            probabilities = self.model.predict(onehot_seed)[0]
-            # [0.1, 0.2, 0.1, 0.6] -> 1
-            output_int = self._sample_with_temperature(probabilities, temperature)
 
-            # update seed
-            seed.append(output_int)
 
-            # map int to our encoding
-            output_symbol = [k for k, v in self._mappings.items() if v == output_int][0]
+        #make prediction::
+        prediction=model.predict(seed_ohe)
 
-            # check whether we're at the end of a melody
-            if output_symbol == "/":
-                break
 
-            # update melody
-            melody.append(output_symbol)
+        #receive answer and translate
+        #Find biggest probability value
+        max_indices= np.argmax(prediction[0],axis=1)
+        #Map prediction to values
+        for index in range(0,32):
+            print(max_indices[index])
 
-        return melody
+        outputs=[]
+        for observation in max_indices:
+            output_symbol = [k for k, v in self._mappings.items() if v == observation]
+            outputs.append(output_symbol)
+
+
+        return outputs
+
+
+
 
     #CHECK
     def _sample_with_temperature(self, probabilites, temperature):
@@ -95,7 +106,7 @@ class MelodyGenerator:
 
         return index
 
-    #good
+
     def save_melody(self, melody, step_duration,format='midi', file_name= 'test.mid'):
         #create a music 21 stream
         stream= m21.stream.Stream()
@@ -137,7 +148,9 @@ class MelodyGenerator:
 
 if __name__ == "__main__":
     mg = MelodyGenerator()
-    seed = "55 _ _ _ 60 _ _ _ 55 _ _ _ 55 _"
-    melody = mg.generate_melody(seed, 500, SEQUENCE_LENGTH, 0.7)
+    user_input=[[False, False, True, False, False, True, False, True, True, True, True, True, True, True, True, True], [False, True, False, False, True, False, False, True, True, True, True, False, False, True, True, True], [False, False, True, True, True, False, True, True, True, False, True, True, False, True, True, True]]
+
+
+    melody = mg.generate_melody(user_input, 0.7)
     print(melody)
     mg.save_melody(melody)
