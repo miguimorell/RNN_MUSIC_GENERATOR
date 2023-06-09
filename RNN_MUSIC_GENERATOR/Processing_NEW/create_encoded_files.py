@@ -8,5 +8,7 @@ def create_encoded_files(songs,files_name,encoded_path):
         save_path = os.path.join(encoded_path, file_name)
         with open(save_path, "w") as fp:
             fp.write(encoded_song)
+            if int(file_name[-2:]) == 26:
+                print(len(encoded_song))
             fp.write('\n')
             fp.write(encoded_velocity)

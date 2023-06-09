@@ -20,11 +20,11 @@ def create_master_file(sequence_length,encoded_path):
                     lines = file.readlines()
                     line1.append(lines[0].rstrip('\n'))
                     line1.append(delimeter)
-                    line2.append(lines[1].rstrip('\n'))
-                    line2.append(delimeter)
+                    #line2.append(lines[1].rstrip('\n'))
+                    #line2.append(delimeter)
 
             # Write the merged content to the output file
             output.write(' '.join(line1))
             output.write('\n')
-            output.write(' '.join(line2))
-            output.write('\n')
+            #output.write(' '.join(line2))
+            #output.write('\n')

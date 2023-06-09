@@ -61,10 +61,10 @@ def process_data():
     print(len(mapped_songs[1]))
     print(len(mapped_songs[2]))
     print(len(mapped_songs[3]))
-    print(len(mapped_songs[4]))
-    print(len(mapped_songs[5]))
-    print(len(mapped_songs[6]))
-    print(len(mapped_songs[7]))
+    #print(len(mapped_songs[4]))
+    #print(len(mapped_songs[5]))
+    #print(len(mapped_songs[6]))
+    #print(len(mapped_songs[7]))
     print('-----')
 
     #this return a dictionary, with each key being a sequence, for both input and target

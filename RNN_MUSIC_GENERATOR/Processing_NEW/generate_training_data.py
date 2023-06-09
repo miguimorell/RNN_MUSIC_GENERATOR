@@ -22,10 +22,10 @@ def generate_training_sequences(mapped_songs,sequence_length,mapping_path):
     #print('Number of sequences:',num_sequences)
     for i in range(num_sequences):
        # print('i: ',i)
-
-        for line in mapped_songs[-6:]:
+        #for line in mapped_songs[-6:]:
+        for line in mapped_songs[-3:]:
             line_to_read = line[i:i + sequence_length]
-            if 80 in line_to_read:
+            if 31 in line_to_read:
                 continue
             if i not in inputs: #initialize the key
                 inputs[i] = []
@@ -34,9 +34,10 @@ def generate_training_sequences(mapped_songs,sequence_length,mapping_path):
             inputs[i].append(line_to_read)
 
         #print(f'Key {i}, sequences: {cant_muestras_por_cancion}')
-        for line in mapped_songs[:2]:
+        for line in mapped_songs[:1]:
+        #for line in mapped_songs[:2]:
             line_to_read = line[i:i + sequence_length]
-            if 80 in line_to_read:
+            if 31 in line_to_read:
                 continue
             if i not in targets: #initialize the key
                 targets[i] = []
