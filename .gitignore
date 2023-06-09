@@ -4,5 +4,8 @@ __pycache__/
 *$py.class
 .env*
 .DS*
-encoded/
-*.json
+Notebook/
+BS_*
+CH_*
+CK_*
+SN_*
