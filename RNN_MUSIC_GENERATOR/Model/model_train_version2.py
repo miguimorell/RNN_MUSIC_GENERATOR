@@ -13,11 +13,11 @@ import json
 MAPPING_PATH = os.environ.get("MAPPING_PATH")
 LOSS = 'sparse_categorical_crossentropy'
 LEARNING_RATE = 0.001 #check if should do a GridSearch
-EPOCHS = 40 #check
+EPOCHS = 100 #check
 BATCH_SIZE = 32 #Check
 FEATURES = 6
 #SAVE_MODEL_PATH = "model.a1" #regression
-SAVE_MODEL_PATH = "model.a2" #first try with classification, no velocity
+SAVE_MODEL_PATH = "model.v2" #first try with classification, no velocity
 
 def init_model(num_units, loss, learning_rate,shape_1,shape_2,num_classes):
     model = Sequential()
@@ -83,11 +83,11 @@ def train(loss=LOSS, learning_rate=LEARNING_RATE):
 if __name__ == "__main__":
 
     #if the model is not trained
-    model,X_test,y_test= train()
+    #model,X_test,y_test= train()
 
     #if the model is trained
-   # model = keras.models.load_model(SAVE_MODEL_PATH)
-    #X_train, y_train,X_test,y_test,X_val,y_val = process_data()
+    model = keras.models.load_model(SAVE_MODEL_PATH)
+    X_train, y_train,X_test,y_test,X_val,y_val = process_data()
 
     #make prediction
     y_pred = model.predict(X_test)
@@ -107,10 +107,11 @@ if __name__ == "__main__":
     print('Y TEST[0] LEN')
     print(y_test[0].shape)
 
-    # Get the indices of the maximum values for each observation
-    max_indices = np.argmax(y_pred[0], axis=1)
-    max_values = y_pred[0, np.arange(y_pred.shape[1]), max_indices]  # Retrieve the max values using indexing
+    for i in range(0,10):
+        # Get the indices of the maximum values for each observation
+        max_indices = np.argmax(y_pred[i], axis=1)
+        #max_values = y_pred[i, np.arange(y_pred.shape[1]), max_indices]  # Retrieve the max values using indexing
 
-    print('Y PREDICT, Y TEST')
-    for index in range(0,32):
-        print (max_indices[index],y_test[0][index])
+        print('Y PREDICT, Y TEST')
+        for index in range(0,32):
+            print (max_indices[index],y_test[i][index])
