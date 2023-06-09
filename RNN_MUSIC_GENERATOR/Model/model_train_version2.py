@@ -13,7 +13,7 @@ import numpy as np
 #LOSS = "mean_squared_error"
 LOSS = 'sparse_categorical_crossentropy'
 LEARNING_RATE = 0.001 #check if should do a GridSearch
-EPOCHS = 20 #check
+EPOCHS = 40 #check
 BATCH_SIZE = 32 #Check
 FEATURES = 6
 #SAVE_MODEL_PATH = "model.a1" #change if we want different name
@@ -36,7 +36,7 @@ def init_model(num_units, loss, learning_rate,shape_1,shape_2):
     model.add(LSTM(units=int(num_units), activation='relu', return_sequences=True, input_shape=(shape_1, shape_2)))
     model.add(LSTM(units=int(num_units/10), activation='relu', return_sequences=True))
     model.add(Dense(64, activation='relu'))  # Reduce the number of units to match the desired output shape
-    model.add(Dense(44, activation='softmax'))  # Set the output shape to (32, 2)
+    model.add(Dense(42, activation='softmax'))  # Set the output shape to (32, 2)
 
     #compile model
     model.compile(loss=loss,
@@ -84,10 +84,10 @@ def train(loss=LOSS, learning_rate=LEARNING_RATE):
 
 if __name__ == "__main__":
 
-    model,X_test,y_test= train()
+    #model,X_test,y_test= train()
 
-    #model = keras.models.load_model(SAVE_MODEL_PATH)
-    #X_train, y_train,X_test,y_test = process_data()
+    model = keras.models.load_model(SAVE_MODEL_PATH)
+    X_train, y_train,X_test,y_test = process_data()
     y_pred = model.predict(X_test)
 
     print('Y PREDICT TYPE')
@@ -105,20 +105,23 @@ if __name__ == "__main__":
     print('Y TEST[0] LEN')
     print(y_test[0].shape)
 
-    print('Y PREDICT')
-    print(y_pred[0])
+    #print('Y PREDICT')
+    #print(y_pred[0])
 
 
     # Get the indices of the maximum values for each observation
     max_indices = np.argmax(y_pred[0], axis=1)
     max_values = y_pred[0, np.arange(y_pred.shape[1]), max_indices]  # Retrieve the max values using indexing
 
-    print('Y PREDICT CLASSES')
-    print(max_indices)
-
-    print('Y PREDICT PROB CLASE')
-    print(max_values)
 
 
-    print('Y TEST')
-    print(y_test[0])
+    #print('Y PREDICT PROB CLASE')
+    #print(max_values)
+
+    #print('Y PREDICT CLASSES')
+    #print(max_indices)
+    #print('Y TEST')
+    #print(y_test[0])
+    print('Y PREDICT, Y TEST')
+    for index in range(0,32):
+        print (max_indices[index],y_test[0][index])
