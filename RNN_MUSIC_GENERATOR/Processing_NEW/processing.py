@@ -61,6 +61,7 @@ def process_data():
     print(len(mapped_songs[1]))
     print(len(mapped_songs[2]))
     print(len(mapped_songs[3]))
+    #in case we want to add the velocity
     #print(len(mapped_songs[4]))
     #print(len(mapped_songs[5]))
     #print(len(mapped_songs[6]))
@@ -70,47 +71,18 @@ def process_data():
     #this return a dictionary, with each key being a sequence, for both input and target
     inputs,targets = generate_training_sequences(mapped_songs,SEQUENCE_LENGTH, MAPPING_PATH)
 
-    #print('KEYS')
-    #print(len(inputs))
-    #print('SECUENCIA 0')
-    #print(inputs[0])
-    #print(inputs[0].shape)
-    #print('SECUENCIA 0, OBSERVACION 0')
-    #print(inputs[0][0])
-    #print(inputs[0][0].shape)
-
-    #print('KEYS')
-    #print(len(targets))
-    #print('SECUENCIA 0')
-    #print(targets[0])
-    #print(targets[0].shape)
-    #print('SECUENCIA 0, OBSERVACION 0')
-    #print(targets[0][0])
-    #print(targets[0][0].shape)
     X = convert_dictionary_x(inputs)
-    #print('TRAIN SHAPE')
-    #print(X_train.shape)
     y = convert_dictionary_y(targets)
 
+    #split the data into training,validating and testing
+
     X_train = X[:-10,:,:]
-    X_test = X[-10:,:,:]
     y_train = y[:-10,:,:]
+
+    X_test = X[-10:,:,:]
     y_test = y[-10:,:,:]
+
     return X_train,y_train,X_test,y_test
-
-    #np.set_printoptions(threshold=np.inf)
-    #save_path = os.path.join(ENCODED_PATH_INT, 'FEATURES.txt')
-    #with open(save_path, "w") as fp:
-    #    for key,values in inputs.items():
-    #        fp.write(str(values))
-    #        print(str(values))
-    #    fp.write('\n')
-
-    #save_path = os.path.join(ENCODED_PATH_INT, 'TARGETS')
-    #with open(save_path, "w") as fp:
-    #    for key,values in targets.items():
-    #        fp.write(str(values))
-    #        fp.write('\n')
 
 if __name__ == "__main__":
     process_data()

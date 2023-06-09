@@ -13,15 +13,11 @@ def load_encoded_songs(encoded_path,file_name,option):
         with open(load_path, "r") as file:
             content = file.readlines()
 
-            #print(content)
             # Remove square brackets and split the content based on comma delimiter
             for line in content:
                 elements = line.replace("[", "").replace("]", "").split(",")
-              #  print(elements)
             #Convert elements to integers
                 elem = [int(element.strip()) for element in elements]
 
-                #print(f'Element: {elem}')
-                #print(f'len: {len(elem)}')
                 mapped_songs.append(elem)
         return mapped_songs

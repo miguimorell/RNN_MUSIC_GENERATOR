@@ -19,9 +19,8 @@ def generate_training_sequences(mapped_songs,sequence_length,mapping_path):
     print('total length')
     print(length)
     num_sequences = length - sequence_length
-    #print('Number of sequences:',num_sequences)
     for i in range(num_sequences):
-       # print('i: ',i)
+        #in case we want to add the velocity
         #for line in mapped_songs[-6:]:
         for line in mapped_songs[-3:]:
             line_to_read = line[i:i + sequence_length]
@@ -29,12 +28,11 @@ def generate_training_sequences(mapped_songs,sequence_length,mapping_path):
                 continue
             if i not in inputs: #initialize the key
                 inputs[i] = []
-            #print('X: ',line[i:i + sequence_length])
-            #print('y: ',line[i + sequence_length])
             inputs[i].append(line_to_read)
 
         #print(f'Key {i}, sequences: {cant_muestras_por_cancion}')
         for line in mapped_songs[:1]:
+        #in case we want to add the velocity
         #for line in mapped_songs[:2]:
             line_to_read = line[i:i + sequence_length]
             if 6 in line_to_read:
