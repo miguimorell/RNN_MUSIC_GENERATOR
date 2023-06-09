@@ -5,5 +5,4 @@ __pycache__/
 .env*
 .DS*
 encoded/
-*.json
 Notebook/

@@ -110,7 +110,7 @@ if __name__ == "__main__":
     for i in range(0,10):
         # Get the indices of the maximum values for each observation
         max_indices = np.argmax(y_pred[i], axis=1)
-        max_values = y_pred[i, np.arange(y_pred.shape[1]), max_indices]  # Retrieve the max values using indexing
+        #max_values = y_pred[i, np.arange(y_pred.shape[1]), max_indices]  # Retrieve the max values using indexing
 
         print('Y PREDICT, Y TEST')
         for index in range(0,32):
