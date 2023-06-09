@@ -3,13 +3,14 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 import music21 as m21
-from RNN_MUSIC_GENERATOR.Processing_NEW.user_input_processing import translate_input
+from RNN_MUSIC_GENERATOR.Generator.user_input_processing import translate_input
 from RNN_MUSIC_GENERATOR.Generator.mapping_seed import map_seed
 import os
 DATASET_PATH = os.environ.get("DATASET_PATH")
 ENCODED_PATH = os.environ.get("ENCODED_PATH")
 ENCODED_PATH_INT = os.environ.get("ENCODED_PATH_INT")
-MAPPING_PATH = os.environ.get("MAPPING_PATH")
+#MAPPING_PATH = os.environ.get("MAPPING_PATH")
+MAPPING_PATH="/home/miguimorell/code/miguimorell/RNN_MUSIC_GENERATOR/RNN_MUSIC_GENERATOR/Generator/mapping.json"
 SEQUENCE_LENGTH = 32
 
 
@@ -17,7 +18,7 @@ SEQUENCE_LENGTH = 32
 class MelodyGenerator:
     """A class that wraps the LSTM model and offers utilities to generate melodies."""
 
-    def __init__(self, model_path="model.h5"):
+    def __init__(self, model_path="/home/miguimorell/code/miguimorell/RNN_MUSIC_GENERATOR/model.v2"):
         """Constructor that initialises TensorFlow model"""
 
         self.model_path = model_path
@@ -48,7 +49,7 @@ class MelodyGenerator:
         seed=translate_input(user_input)
 
         #Mapping seed
-        seed_mapped=map_seed(seed)
+        seed_mapped=map_seed(seed,MAPPING_PATH)
 
 
         #OneHotEncode AND RESHAPE seeds
@@ -67,7 +68,8 @@ class MelodyGenerator:
 
 
         #make prediction::
-        prediction=model.predict(seed_ohe)
+        print("Predicting:")
+        prediction=self.model.predict(seed_ohe)
 
 
         #receive answer and translate
@@ -80,7 +82,7 @@ class MelodyGenerator:
         outputs=[]
         for observation in max_indices:
             output_symbol = [k for k, v in self._mappings.items() if v == observation]
-            outputs.append(output_symbol)
+            outputs.append(output_symbol[0])
 
 
         return outputs
@@ -107,7 +109,7 @@ class MelodyGenerator:
         return index
 
 
-    def save_melody(self, melody, step_duration,format='midi', file_name= 'test.mid'):
+    def save_melody(self, melody, step_duration=0.25,format='midi', file_name= 'test.mid'):
         #create a music 21 stream
         stream= m21.stream.Stream()
 
@@ -144,13 +146,27 @@ class MelodyGenerator:
         #write the m21 stream to a midifile
         stream.write(format, file_name)
 
+        return stream
+
 
 
 if __name__ == "__main__":
     mg = MelodyGenerator()
-    user_input=[[False, False, True, False, False, True, False, True, True, True, True, True, True, True, True, True], [False, True, False, False, True, False, False, True, True, True, True, False, False, True, True, True], [False, False, True, True, True, False, True, True, True, False, True, True, False, True, True, True]]
+    user_input=[[True, False, False, False, False, False, False,False,True, False, False, False, False, False, False,False,True, False, False, False, False, False, False,False,True, False, False, False, False, False, False,False],
+                [False, False, False, False, True,False, False, False,False, False, False, False, True,False, False, False,False, False, False, False, True,False, False, False,False, False, False, False, True,False, False, False],
+                [True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False]]
 
 
     melody = mg.generate_melody(user_input, 0.7)
     print(melody)
-    mg.save_melody(melody)
+    midi=mg.save_melody(melody)
+
+
+
+
+    #Reproducir
+    # Crear un reproductor de transmisión (StreamPlayer)
+    reproductor = m21.midi.realtime.StreamPlayer(midi)
+
+    # Reproducir el archivo MIDI
+    reproductor.play()

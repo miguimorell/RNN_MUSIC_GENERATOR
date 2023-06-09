@@ -1,6 +1,5 @@
 def translate_input(user_input):
 
-
     #Create simbols:  In a future cambiar por una llamada a un mapping
     send_kick_data = []
     send_snare_data = []
