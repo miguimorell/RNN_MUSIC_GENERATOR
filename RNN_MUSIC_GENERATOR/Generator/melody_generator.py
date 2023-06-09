@@ -166,7 +166,7 @@ if __name__ == "__main__":
 
     #Reproducir
     # Crear un reproductor de transmisión (StreamPlayer)
-    reproductor = m21.midi.realtime.StreamPlayer(midi)
+    #reproductor = m21.midi.realtime.StreamPlayer(midi)
 
     # Reproducir el archivo MIDI
-    reproductor.play()
+    #reproductor.play()
