@@ -10,15 +10,14 @@ DATASET_PATH = os.environ.get("DATASET_PATH")
 ENCODED_PATH = os.environ.get("ENCODED_PATH")
 ENCODED_PATH_INT = os.environ.get("ENCODED_PATH_INT")
 #MAPPING_PATH = os.environ.get("MAPPING_PATH")
-MAPPING_PATH="/home/miguimorell/code/miguimorell/RNN_MUSIC_GENERATOR/RNN_MUSIC_GENERATOR/Generator/mapping.json"
+MAPPING_PATH="/Users/Cris/code/miguimorell/RNN_MUSIC_GENERATOR/RNN_MUSIC_GENERATOR/Generator/mapping.json"
 SEQUENCE_LENGTH = 32
-
 
 
 class MelodyGenerator:
     """A class that wraps the LSTM model and offers utilities to generate melodies."""
 
-    def __init__(self, model_path="/home/miguimorell/code/miguimorell/RNN_MUSIC_GENERATOR/model.v2"):
+    def __init__(self, model_path="/Users/Cris/code/miguimorell/RNN_MUSIC_GENERATOR/model.v2"):
         """Constructor that initialises TensorFlow model"""
 
         self.model_path = model_path
