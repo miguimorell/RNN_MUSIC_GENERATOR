@@ -23,6 +23,10 @@ class MelodyGenerator:
         self._start_symbols = ["/"] * SEQUENCE_LENGTH
 
 
+
+
+
+
     def generate_melody(self, seed, num_steps, max_sequence_length, temperature):
         """Generates a melody using the DL model and returns a midi file.
 
@@ -36,8 +40,8 @@ class MelodyGenerator:
         """
 
         # create seed with start symbols
-        seed = seed.split()
-        melody = seed
+        #seed = seed.split()
+        #melody = seed
         seed = self._start_symbols + seed
 
         # map seed to int
@@ -73,7 +77,7 @@ class MelodyGenerator:
 
         return melody
 
-
+    #CHECK
     def _sample_with_temperature(self, probabilites, temperature):
         """Samples an index from a probability array reapplying softmax using temperature
 
@@ -91,7 +95,7 @@ class MelodyGenerator:
 
         return index
 
-
+    #good
     def save_melody(self, melody, step_duration,format='midi', file_name= 'test.mid'):
         #create a music 21 stream
         stream= m21.stream.Stream()
