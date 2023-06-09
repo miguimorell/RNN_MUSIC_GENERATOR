@@ -20,5 +20,8 @@ def load_encoded_songs(encoded_path,file_name,option):
               #  print(elements)
             #Convert elements to integers
                 elem = [int(element.strip()) for element in elements]
+
+                #print(f'Element: {elem}')
+                #print(f'len: {len(elem)}')
                 mapped_songs.append(elem)
         return mapped_songs

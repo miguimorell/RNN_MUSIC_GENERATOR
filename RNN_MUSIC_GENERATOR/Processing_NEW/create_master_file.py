@@ -18,8 +18,14 @@ def create_master_file(sequence_length,encoded_path):
             for file_path in files:
                 with open(file_path, 'r') as file:
                     lines = file.readlines()
+                    #if int(file_path[-2:]) == 26:
+                    #prueba = lines[0].rstrip('\n')
+                    #print(f"{file_path[-2:]}: {prueba}")
+                    #print(f"LEN: {len(prueba)}")
                     line1.append(lines[0].rstrip('\n'))
                     line1.append(delimeter)
+                    prueba = lines[0].rstrip('\n')
+                    print(f'Len: {len(prueba)}')
                     #line2.append(lines[1].rstrip('\n'))
                     #line2.append(delimeter)
 
