@@ -1,6 +1,10 @@
 import keras
 import json
 import numpy as np
+import os
+
+MAPPING_PATH = os.environ.get("MAPPING_PATH")
+
 
 def generate_training_sequences(mapped_songs,sequence_length,mapping_path):
     """Create input and output data samples for training. Each sample is a sequence.
@@ -14,30 +18,39 @@ def generate_training_sequences(mapped_songs,sequence_length,mapping_path):
     inputs = {}
     targets = {}
 
+    #because the mapping changes every time we code is run, the number of classes may change
+    #if more were added when song were added. So we need the lenght of the dictionary
+    #for the last layer
+
+    # load mappings
+    with open(MAPPING_PATH, "r") as fp:
+        mappings = json.load(fp)
+
+    key_value = mappings['/']
+    print(f'Key_Value: {key_value}')
+
     # generate the training sequences
     length = len(mapped_songs[0])
     print('total length')
     print(length)
     num_sequences = length - sequence_length
-    #print('Number of sequences:',num_sequences)
     for i in range(num_sequences):
-       # print('i: ',i)
+        #in case we want to add the velocity
         #for line in mapped_songs[-6:]:
         for line in mapped_songs[-3:]:
             line_to_read = line[i:i + sequence_length]
-            if 31 in line_to_read:
+            if key_value in line_to_read:
                 continue
             if i not in inputs: #initialize the key
                 inputs[i] = []
-            #print('X: ',line[i:i + sequence_length])
-            #print('y: ',line[i + sequence_length])
             inputs[i].append(line_to_read)
 
         #print(f'Key {i}, sequences: {cant_muestras_por_cancion}')
         for line in mapped_songs[:1]:
+        #in case we want to add the velocity
         #for line in mapped_songs[:2]:
             line_to_read = line[i:i + sequence_length]
-            if 31 in line_to_read:
+            if key_value in line_to_read:
                 continue
             if i not in targets: #initialize the key
                 targets[i] = []

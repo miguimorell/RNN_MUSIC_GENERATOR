@@ -25,7 +25,7 @@ def predict():
 
     """
     model = app.state.model
-    X_pred= #streamlit data
+    X_pred= #streamlit data ?
     X_processed_pred = process_data(X_pred) #ADD OUR FUNCTION
     y_pred = model.predict(X_processed_pred) #ADD
 
