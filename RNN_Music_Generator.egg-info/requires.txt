@@ -1,0 +1,10 @@
+numpy==1.23.5
+protobuf==3.19.2
+google-cloud-storage
+mlflow==2.1.1
+pyarrow
+python-dotenv
+fastapi
+pytz
+uvicorn
+httpx

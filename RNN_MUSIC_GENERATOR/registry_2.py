@@ -61,7 +61,10 @@ def save_model(model: keras.Model = None) -> None:
 
 def load_model(model_origin, stage="Production") -> keras.Model:
     """
-    Return a saved model:from MLFLOW (by "stage") .
+    Return a saved model:
+    - locally (latest one in alphabetical order)
+    - or from MLFLOW (by "stage") if MODEL=='mlflow' --> for unit 03 only
+
     Return None (but do not Raise) if no model is found
 
     """
@@ -96,9 +99,11 @@ def load_model(model_origin, stage="Production") -> keras.Model:
         try:
             model_versions = client.get_latest_versions(name=MLFLOW_MODEL_NAME, stages=[stage])
             model_uri = model_versions[0].source
+
             assert model_uri is not None
         except:
             print(f"\n❌ No model found with name {MLFLOW_MODEL_NAME} in stage {stage}")
+
             return None
 
         model = mlflow.tensorflow.load_model(model_uri=model_uri)

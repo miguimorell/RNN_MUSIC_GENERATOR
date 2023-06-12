@@ -1,35 +1,44 @@
 import json
 import numpy as np
 import tensorflow as tf
+import os
 from tensorflow import keras
 import music21 as m21
 from RNN_MUSIC_GENERATOR.Generator.user_input_processing import translate_input
 from RNN_MUSIC_GENERATOR.Generator.mapping_seed import map_seed
-import os
+from RNN_MUSIC_GENERATOR.registry import load_model
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+
+app = FastAPI()
 DATASET_PATH = os.environ.get("DATASET_PATH")
 ENCODED_PATH = os.environ.get("ENCODED_PATH")
 ENCODED_PATH_INT = os.environ.get("ENCODED_PATH_INT")
-#MAPPING_PATH = os.environ.get("MAPPING_PATH")
-MAPPING_PATH="/Users/Cris/code/miguimorell/RNN_MUSIC_GENERATOR/RNN_MUSIC_GENERATOR/Generator/mapping.json"
+MAPPING_PATH = os.environ.get("MAPPING_PATH")
 SEQUENCE_LENGTH = 32
 
 
 class MelodyGenerator:
     """A class that wraps the LSTM model and offers utilities to generate melodies."""
 
-    def __init__(self, model_path="/Users/Cris/code/miguimorell/RNN_MUSIC_GENERATOR/model.v2"):
-        """Constructor that initialises TensorFlow model"""
-
-        self.model_path = model_path
-        self.model = keras.models.load_model(model_path)
+    def __init__(self, app, model_origin='mlflow'):
+        """Constructor that initialises TensorFlow mlflow model"""
+        #app = FastAPI()
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=["*"],  # Allows all origins
+            allow_credentials=True,
+            allow_methods=["*"],  # Allows all methods
+            allow_headers=["*"],  # Allows all headers
+)
+        app.state.model = load_model(model_origin='mlflow')
+        self.model = app.state.model
 
         with open(MAPPING_PATH, "r") as f:
             self._mappings = json.load(f)
 
         self._start_symbols = ["/"] * SEQUENCE_LENGTH
-
-
-
 
 
     def generate_melody(self, user_input, temperature):
@@ -64,8 +73,6 @@ class MelodyGenerator:
         d0,d1,d2,d3=seed_ohe.shape
         seed_ohe=np.reshape(seed_ohe,(d0,d1,d2*d3))
 
-
-
         #make prediction::
         print("Predicting:")
         prediction=self.model.predict(seed_ohe)
@@ -87,8 +94,6 @@ class MelodyGenerator:
         return outputs
 
 
-
-
     #CHECK
     def _sample_with_temperature(self, probabilites, temperature):
         """Samples an index from a probability array reapplying softmax using temperature
@@ -108,64 +113,66 @@ class MelodyGenerator:
         return index
 
 
-    def save_melody(self, melody, step_duration=0.25,format='midi', file_name= 'test.mid'):
-        #create a music 21 stream
-        stream= m21.stream.Stream()
+    # def save_melody(self, melody, step_duration=0.25,format='midi', file_name= 'test.mid'):
+    #     #create a music 21 stream
+    #     stream= m21.stream.Stream()
 
-        #parse all the symbols in the melody and create note/rest objects
-        #e.g. 60_ _ _ r_ 62_
-        start_symbol= None
-        step_counter= 1
+    #     #parse all the symbols in the melody and create note/rest objects
+    #     #e.g. 60_ _ _ r_ 62_
+    #     start_symbol= None
+    #     step_counter= 1
 
-        for i, symbol in  enumerate(melody):
-            #handle case in which we have a note/rest.
-            if symbol != "_":
-                pass
-                #ensure we're dealing with note/rest beyond the first one
-                if start_symbol is not None:
-                    quarter_length_duration= step_duration * step_counter #0.25*4 = 1
-                    #handle rest
-                    if start_symbol== 'r':
-                        m21_event= m21.note.Rest(quarterLenth= quarter_length_duration)
-                    #handle note
-                    else:
-                        m21_event= m21.note.Note(int(start_symbol),quarterLenth=quarter_length_duration)
+    #     for i, symbol in  enumerate(melody):
+    #         #handle case in which we have a note/rest.
+    #         if symbol != "_":
+    #             pass
+    #             #ensure we're dealing with note/rest beyond the first one
+    #             if start_symbol is not None:
+    #                 quarter_length_duration= step_duration * step_counter #0.25*4 = 1
+    #                 #handle rest
+    #                 if start_symbol== 'r':
+    #                     m21_event= m21.note.Rest(quarterLenth= quarter_length_duration)
+    #                 #handle note
+    #                 else:
+    #                     m21_event= m21.note.Note(int(start_symbol),quarterLenth=quarter_length_duration)
 
-                    stream.append(m21_event)
+    #                 stream.append(m21_event)
 
-                #reset the step_counter
-                    step_counter= 1
+    #             #reset the step_counter
+    #                 step_counter= 1
 
-                start_symbol = symbol
+    #             start_symbol = symbol
 
-            #handle case in which we have a prolongation sign "_"
-            else:
-                step_counter+= 1
+    #         #handle case in which we have a prolongation sign "_"
+    #         else:
+    #             step_counter+= 1
 
-        #write the m21 stream to a midifile
-        stream.write(format, file_name)
+    #     #write the m21 stream to a midifile
+    #     stream.write(format, file_name)
 
-        return stream
+    #     return stream
 
+@app.get("/predict")
+def predict():
+    """
+    Make a single course prediction.
+    Receives X, a list of lists from the instruments, pass to the MelodyGenerator class the input,
+    and returns the prediction.
+    """
+    mg = MelodyGenerator(app= FastAPI(), model_origin='mlflow')
+    X= [[True, False, False, False, False, False, False,False,True, False, False, False, False, False, False,False,True, False, False, False, False, False, False,False,True, False, False, False, False, False, False,False],
+    [False, False, False, False, True,False, False, False,False, False, False, False, True,False, False, False,False, False, False, False, True,False, False, False,False, False, False, False, True,False, False, False],
+    [True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False]]
+    melody = mg.generate_melody(X, 0.7)
 
+    # ⚠️ fastapi only accepts simple Python data types as a return value
+    # among them dict, list, str, int, float, bool
+    # in order to be able to convert the api sresponse to JSON
+    test_dict = {"1": type(melody)}
+    return test_dict
 
-if __name__ == "__main__":
-    mg = MelodyGenerator()
-    user_input=[[True, False, False, False, False, False, False,False,True, False, False, False, False, False, False,False,True, False, False, False, False, False, False,False,True, False, False, False, False, False, False,False],
-                [False, False, False, False, True,False, False, False,False, False, False, False, True,False, False, False,False, False, False, False, True,False, False, False,False, False, False, False, True,False, False, False],
-                [True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False]]
-
-
-    melody = mg.generate_melody(user_input, 0.7)
-    print(melody)
-    midi=mg.save_melody(melody)
-
-
-
-
-    #Reproducir
-    # Crear un reproductor de transmisión (StreamPlayer)
-    reproductor = m21.midi.realtime.StreamPlayer(midi)
-
-    # Reproducir el archivo MIDI
-    reproductor.play()
+@app.get("/")
+def root():
+    return {
+    'greeting': 'Hello to RNN Music Generator'
+}
