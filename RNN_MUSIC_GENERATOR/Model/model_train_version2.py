@@ -6,7 +6,7 @@ from keras.models import Model, Sequential
 from keras.layers import Dense, Dropout, Reshape
 from keras.callbacks import EarlyStopping
 from keras.optimizers import Adam
-from Processing_NEW.processing import process_data, SEQUENCE_LENGTH
+from RNN_MUSIC_GENERATOR.Processing_NEW.processing import process_data, SEQUENCE_LENGTH
 import numpy as np
 import json
 
@@ -18,7 +18,9 @@ EPOCHS = 100 #check
 BATCH_SIZE = 32 #Check
 FEATURES = 6
 #SAVE_MODEL_PATH = "model.a1" #regression
-SAVE_MODEL_PATH = "model.v2" #first try with classification, no velocity
+#SAVE_MODEL_PATH = "model.v2" #first try with classification, no velocity
+SAVE_MODEL_PATH = "model.v3" #trained with aprox 80 songs, no velocity
+
 
 def init_model(num_units, loss, learning_rate,shape_1,shape_2,num_classes):
     model = Sequential()
@@ -85,11 +87,11 @@ def train(loss=LOSS, learning_rate=LEARNING_RATE):
 if __name__ == "__main__":
 
     #if the model is not trained
-    #model,X_test,y_test= train()
+    model,X_test,y_test= train()
 
     #if the model is trained
-    model = keras.models.load_model(SAVE_MODEL_PATH)
-    X_train, y_train,X_test,y_test,X_val,y_val = process_data()
+    #model = keras.models.load_model(SAVE_MODEL_PATH)
+    #X_train, y_train,X_test,y_test,X_val,y_val = process_data()
 
     #make prediction
     y_pred = model.predict(X_test)
