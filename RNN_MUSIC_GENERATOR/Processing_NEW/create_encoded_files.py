@@ -3,7 +3,7 @@ import os
 
 def create_encoded_files(songs,files_name,encoded_path):
     for song,file_name in zip(songs,files_name):
-        encoded_song,encoded_velocity=encode_song(song)
+        encoded_song,encoded_velocity=encode_song(song,time_step = 0.25)
         # save songs to text file
         save_path = os.path.join(encoded_path, file_name)
         with open(save_path, "w") as fp:

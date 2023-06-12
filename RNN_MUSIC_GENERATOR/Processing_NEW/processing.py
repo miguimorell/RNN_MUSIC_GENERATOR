@@ -1,13 +1,13 @@
 import os
 
-from Processing_NEW.load_songs import load_songs
-from Processing_NEW.create_encoded_files import create_encoded_files
-from Processing_NEW.create_master_file import create_master_file
-from Processing_NEW.load_encoded_songs import load_encoded_songs
-from Processing_NEW.create_mapping import create_mapping
-from Processing_NEW.map_file import map_file
-from Processing_NEW.generate_training_data import generate_training_sequences
-from Processing_NEW.convert_dictionary import convert_dictionary_x,convert_dictionary_y
+from RNN_MUSIC_GENERATOR.Processing_NEW.load_songs import load_songs
+from RNN_MUSIC_GENERATOR.Processing_NEW.create_encoded_files import create_encoded_files
+from RNN_MUSIC_GENERATOR.Processing_NEW.create_master_file import create_master_file
+from RNN_MUSIC_GENERATOR.Processing_NEW.load_encoded_songs import load_encoded_songs
+from RNN_MUSIC_GENERATOR.Processing_NEW.create_mapping import create_mapping
+from RNN_MUSIC_GENERATOR.Processing_NEW.map_file import map_file
+from RNN_MUSIC_GENERATOR.Processing_NEW.generate_training_data import generate_training_sequences
+from RNN_MUSIC_GENERATOR.Processing_NEW.convert_dictionary import convert_dictionary_x,convert_dictionary_y
 
 '''
 MIDI FILES GIVES ME THE FOLLOWING INFORMATION:
@@ -18,7 +18,8 @@ DATASET_PATH = os.environ.get("DATASET_PATH")
 ENCODED_PATH = os.environ.get("ENCODED_PATH")
 ENCODED_PATH_INT = os.environ.get("ENCODED_PATH_INT")
 MAPPING_PATH = os.environ.get("MAPPING_PATH")
-SEQUENCE_LENGTH = 32
+#SEQUENCE_LENGTH = 64 #for time_step = 0.125
+SEQUENCE_LENGTH = 32 # for time_step = 0.25
 
 
 def process_data():
