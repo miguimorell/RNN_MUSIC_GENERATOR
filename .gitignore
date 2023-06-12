@@ -10,3 +10,4 @@ CH_*
 CK_*
 SN_*
 *.ipynb
+.ipynb_checkpoints/

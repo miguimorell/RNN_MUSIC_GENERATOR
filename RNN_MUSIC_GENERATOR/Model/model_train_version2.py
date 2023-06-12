@@ -6,7 +6,7 @@ from keras.models import Model, Sequential
 from keras.layers import Dense, Dropout, Reshape
 from keras.callbacks import EarlyStopping
 from keras.optimizers import Adam
-from Processing_NEW.processing import process_data, SEQUENCE_LENGTH
+from RNN_MUSIC_GENERATOR.Processing_NEW.processing import process_data, SEQUENCE_LENGTH
 import numpy as np
 import json
 
@@ -18,14 +18,16 @@ EPOCHS = 100 #check
 BATCH_SIZE = 32 #Check
 FEATURES = 6
 #SAVE_MODEL_PATH = "model.a1" #regression
-SAVE_MODEL_PATH = "model.v2" #first try with classification, no velocity
+#SAVE_MODEL_PATH = "model.v2" #first try with classification, no velocity
+SAVE_MODEL_PATH = "model.v3" #trained with aprox 65 songs, no velocity
+
 
 def init_model(num_units, loss, learning_rate,shape_1,shape_2,num_classes):
     model = Sequential()
     model.add(LSTM(units=int(num_units), activation='relu', return_sequences=True, input_shape=(shape_1, shape_2)))
     model.add(LSTM(units=int(num_units/10), activation='relu', return_sequences=True))
     model.add(Dense(64, activation='relu'))  # Reduce the number of units to match the desired output shape
-    model.add(Dense(num_classes, activation='softmax'))  # Set the output shape to (32, 2)
+    model.add(Dense(num_classes, activation='softmax'))  # Set the output shape to (32, 1)
 
     #compile model
     model.compile(loss=loss,
@@ -113,7 +115,9 @@ if __name__ == "__main__":
         # Get the indices of the maximum values for each observation
         max_indices = np.argmax(y_pred[i], axis=1)
         #max_values = y_pred[i, np.arange(y_pred.shape[1]), max_indices]  # Retrieve the max values using indexing
-
-        print('Y PREDICT, Y TEST')
+        print(f'TEST {i}')
+        print('Y PREDICT|Y TEST')
         for index in range(0,32):
-            print (max_indices[index],y_test[i][index])
+            print (f'{max_indices[index]}__________{y_test[i][index]}')
+
+        print('\n')
