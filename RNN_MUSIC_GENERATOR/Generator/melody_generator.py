@@ -17,6 +17,7 @@ ENCODED_PATH = os.environ.get("ENCODED_PATH")
 ENCODED_PATH_INT = os.environ.get("ENCODED_PATH_INT")
 MAPPING_PATH = os.environ.get("MAPPING_PATH")
 SEQUENCE_LENGTH = 32
+SAVE_MODEL_PATH = os.environ.get("SAVE_MODEL_PATH")
 
 
 class MelodyGenerator:
@@ -33,6 +34,7 @@ class MelodyGenerator:
             allow_headers=["*"],  # Allows all headers
 )
         app.state.model = load_model(model_origin='mlflow')
+        #app.state.model = keras.models.load_model(SAVE_MODEL_PATH)
         self.model = app.state.model
 
         with open(MAPPING_PATH, "r") as f:
@@ -89,7 +91,6 @@ class MelodyGenerator:
         for observation in max_indices:
             output_symbol = [k for k, v in self._mappings.items() if v == observation]
             outputs.append(output_symbol[0])
-
 
         return outputs
 
@@ -153,26 +154,56 @@ class MelodyGenerator:
     #     return stream
 
 @app.get("/predict")
-def predict():
+def predict(CH,CK,SN):
     """
     Make a single course prediction.
     Receives X, a list of lists from the instruments, pass to the MelodyGenerator class the input,
     and returns the prediction.
     """
-    mg = MelodyGenerator(app= FastAPI(), model_origin='mlflow')
-    X= [[True, False, False, False, False, False, False,False,True, False, False, False, False, False, False,False,True, False, False, False, False, False, False,False,True, False, False, False, False, False, False,False],
-    [False, False, False, False, True,False, False, False,False, False, False, False, True,False, False, False,False, False, False, False, True,False, False, False,False, False, False, False, True,False, False, False],
-    [True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False]]
-    melody = mg.generate_melody(X, 0.7)
+    CH_list = CH.split(",")
+    # Convert the string values to their corresponding boolean values
+    print("CH_LIST")
+    print(CH_list)
+    CH_list = [value == "True" for value in CH_list]
+    print("CH_LIST_BOOLEAN")
+    print(CH_list)
 
+    CK_list = CK.split(",")
+    # Convert the string values to their corresponding boolean values
+    CK_list = [value == "True" for value in CK_list]
+
+    SN_list = SN.split(",")
+    # Convert the string values to their corresponding boolean values
+    SN_list = [value == "True" for value in SN_list]
+
+    X = [CH_list,CK_list,SN_list]
+    #print(CH_list)
+    #X = X_dict["X"]
+    print(type(X))
+    print(X)
+    mg = MelodyGenerator(app= FastAPI(), model_origin='mlflow')
+    #X= [[True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False],
+    #            [True, False, False, False, False, False, False,False,True, False, False, False, False, False, False,False,True, False, False, False, False, False, False,False,True, False, False, False, False, False, False,False],
+    #            [False, False, False, False, True,False, False, False,False, False, False, False, True,False, False, False,False, False, False, False, True,False, False, False,False, False, False, False, True,False, False, False]]
+    melody = mg.generate_melody(X, 0.7)
     # ⚠️ fastapi only accepts simple Python data types as a return value
     # among them dict, list, str, int, float, bool
     # in order to be able to convert the api sresponse to JSON
-    test_dict = {"1": type(melody)}
-    return test_dict
+    my_dict = {index: value for index, value in enumerate(melody)}
+    return my_dict
+
 
 @app.get("/")
 def root():
     return {
     'greeting': 'Hello to RNN Music Generator'
 }
+
+#X_dict={"CH":"[True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False],
+# "CK":[True,False,False,False,False,False,False,False,True,False,False,False,False,False,False,False,True,False,False,False,False,False,False,False,True,False,False,False,False,False,False,False],
+# "SN":[False,False,False,False,True,False,False,False,False,False,False,False,True,False,False,False,False,False,False,False,True,False,False,False,False,False,False,False,True,False,False,False]}
+#CH="True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False"
+#CK="True,False,False,False,False,False,False,False,True,False,False,False,False,False,False,False,True,False,False,False,False,False,False,False,True,False,False,False,False,False,False,False"
+#SN="False,False,False,False,True,False,False,False,False,False,False,False,True,False,False,False,False,False,False,False,True,False,False,False,False,False,False,False,True,False,False,False"
+
+#http://127.0.0.1:8000/predict?CH=True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False&CK=True,False,False,False,False,False,False,False,True,False,False,False,False,False,False,False,True,False,False,False,False,False,False,False,True,False,False,False,False,False,False,False&SN=False,False,False,False,True,False,False,False,False,False,False,False,True,False,False,False,False,False,False,False,True,False,False,False,False,False,False,False,True,False,False,False
