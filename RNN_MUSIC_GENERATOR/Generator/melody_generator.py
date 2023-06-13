@@ -88,6 +88,38 @@ class MelodyGenerator:
         self._start_symbols = ["/"] * SEQUENCE_LENGTH
 
 
+    #CHECK MIGUEL
+    def _sample_with_temperature(self, probabilites, temperature):
+        """Samples an index from a probability array reapplying softmax using temperature
+
+        :param predictions (nd.array): Array containing probabilities for each of the possible outputs.
+        :param temperature (float): Float in interval [0, 1]. Numbers closer to 0 make the model more deterministic.
+            A number closer to 1 makes the generation more unpredictable.
+
+        :return final_chosen (int): Selected output symbol
+        """
+        predictions = np.log(probabilites) / temperature
+        predictions = np.exp(predictions) / np.sum(np.exp(predictions), axis=1, keepdims=True)
+
+
+        #Creates an 2D array with numbers from 0 to 43 for every row
+        filas = probabilites.shape[0] #32
+        columnas = probabilites.shape[1] #44
+        matriz = np.arange(columnas).reshape(1, columnas)
+        matriz = np.tile(matriz, (filas, 1))
+
+
+        final_chosen=[]
+
+        for observation in range(probabilites.shape[0]):
+            choose=np.random.choice(matriz[observation], p=probabilites[observation])
+            final_chosen.append(choose)
+
+        return final_chosen
+
+
+
+
     def generate_melody(self, user_input, temperature):
         """Generates a melody using the DL model and returns a midi file.
 
@@ -124,42 +156,28 @@ class MelodyGenerator:
         print("Predicting:")
         prediction=self.model.predict(seed_ohe)
 
+        ############################################################################################3
+        if temperature==0.0:
+            #Not include temperature
+            final_prediction= np.argmax(prediction[0],axis=1)
+        else:
+            #Include temperature
+            final_prediction=self._sample_with_temperature(prediction[0],temperature)
+        ################################################################################################3
 
-        #receive answer and translate
-        #Find biggest probability value
-        max_indices= np.argmax(prediction[0],axis=1)
-        #Map prediction to values
-        for index in range(0,32):
-            print(max_indices[index])
 
         outputs=[]
-        for observation in max_indices:
+        for observation in final_prediction:
             output_symbol = [k for k, v in self._mappings.items() if v == observation]
             outputs.append(output_symbol[0])
 
         return outputs
 
 
-    #CHECK MIGUEL
-    def _sample_with_temperature(self, probabilites, temperature):
-        """Samples an index from a probability array reapplying softmax using temperature
 
-        :param predictions (nd.array): Array containing probabilities for each of the possible outputs.
-        :param temperature (float): Float in interval [0, 1]. Numbers closer to 0 make the model more deterministic.
-            A number closer to 1 makes the generation more unpredictable.
-
-        :return index (int): Selected output symbol
-        """
-        predictions = np.log(probabilites) / temperature
-        probabilites = np.exp(predictions) / np.sum(np.exp(predictions))
-
-        choices = range(len(probabilites)) # [0, 1, 2, 3]
-        index = np.random.choice(choices, p=probabilites)
-
-        return index
 
 @app.get("/predict")
-def predict(CH,CK,SN):
+def predict(CH,CK,SN,T):
     """
     Make a single course prediction.
     Receives X, a list of lists from the instruments, pass to the MelodyGenerator class the input,
@@ -188,7 +206,7 @@ def predict(CH,CK,SN):
     #X= [[True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False],
     #            [True, False, False, False, False, False, False,False,True, False, False, False, False, False, False,False,True, False, False, False, False, False, False,False,True, False, False, False, False, False, False,False],
     #            [False, False, False, False, True,False, False, False,False, False, False, False, True,False, False, False,False, False, False, False, True,False, False, False,False, False, False, False, True,False, False, False]]
-    melody = mg.generate_melody(X, 0.7)
+    melody = mg.generate_melody(X, float(T))
     # ⚠️ fastapi only accepts simple Python data types as a return value
     # among them dict, list, str, int, float, bool
     # in order to be able to convert the api sresponse to JSON
