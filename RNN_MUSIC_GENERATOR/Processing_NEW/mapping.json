@@ -1,8 +1,5 @@
-import os
-import json
-
-
-MAPPING = {"r": 0,
+{
+    "r": 0,
     "59": 1,
     "61": 2,
     "70": 3,
@@ -47,20 +44,3 @@ MAPPING = {"r": 0,
     "60": 42,
     "56": 43
 }
-
-def map_seed(seed, MAPPING):
-
-    # load mappings
-    mapping = MAPPING
-
-    int_songs2 = [[],[],[]]
-    for index, instrument in enumerate(seed):
-        for symbol in instrument:
-            int_songs2[index].append(mapping[symbol])
-
-    return int_songs2
-
-
-
-if __name__ == "__main__":
-    pass
