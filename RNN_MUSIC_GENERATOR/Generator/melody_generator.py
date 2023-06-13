@@ -2,6 +2,7 @@ import json
 import numpy as np
 import tensorflow as tf
 import os
+import json
 from tensorflow import keras
 import music21 as m21
 from RNN_MUSIC_GENERATOR.Generator.user_input_processing import translate_input
@@ -15,7 +16,54 @@ app = FastAPI()
 DATASET_PATH = os.environ.get("DATASET_PATH")
 ENCODED_PATH = os.environ.get("ENCODED_PATH")
 ENCODED_PATH_INT = os.environ.get("ENCODED_PATH_INT")
-MAPPING_PATH = os.environ.get("MAPPING_PATH")
+#MAPPING_PATH = os.environ.get("MAPPING_PATH")
+MAPPING = {"r": 0,
+    "59": 1,
+    "61": 2,
+    "70": 3,
+    "38": 4,
+    "34": 5,
+    "39": 6,
+    "46": 7,
+    "53": 8,
+    "36": 9,
+    "63": 10,
+    "29": 11,
+    "44": 12,
+    "/": 13,
+    "30": 14,
+    "65": 15,
+    "69": 16,
+    "47": 17,
+    "62": 18,
+    "48": 19,
+    "43": 20,
+    "68": 21,
+    "54": 22,
+    "50": 23,
+    "31": 24,
+    "52": 25,
+    "37": 26,
+    "51": 27,
+    "40": 28,
+    "_": 29,
+    "41": 30,
+    "42": 31,
+    "32": 32,
+    "49": 33,
+    "66": 34,
+    "45": 35,
+    "67": 36,
+    "57": 37,
+    "64": 38,
+    "35": 39,
+    "33": 40,
+    "58": 41,
+    "60": 42,
+    "56": 43
+}
+
+
 SEQUENCE_LENGTH = 32
 SAVE_MODEL_PATH = os.environ.get("SAVE_MODEL_PATH")
 
@@ -36,10 +84,7 @@ class MelodyGenerator:
         app.state.model = load_model(model_origin='mlflow')
         #app.state.model = keras.models.load_model(SAVE_MODEL_PATH)
         self.model = app.state.model
-
-        with open(MAPPING_PATH, "r") as f:
-            self._mappings = json.load(f)
-
+        self._mappings = MAPPING
         self._start_symbols = ["/"] * SEQUENCE_LENGTH
 
 
@@ -59,7 +104,7 @@ class MelodyGenerator:
         seed=translate_input(user_input)
 
         #Mapping seed
-        seed_mapped=map_seed(seed,MAPPING_PATH)
+        seed_mapped=map_seed(seed,self._mappings)
 
 
         #OneHotEncode AND RESHAPE seeds
@@ -95,7 +140,7 @@ class MelodyGenerator:
         return outputs
 
 
-    #CHECK
+    #CHECK MIGUEL
     def _sample_with_temperature(self, probabilites, temperature):
         """Samples an index from a probability array reapplying softmax using temperature
 
@@ -113,46 +158,6 @@ class MelodyGenerator:
 
         return index
 
-
-    # def save_melody(self, melody, step_duration=0.25,format='midi', file_name= 'test.mid'):
-    #     #create a music 21 stream
-    #     stream= m21.stream.Stream()
-
-    #     #parse all the symbols in the melody and create note/rest objects
-    #     #e.g. 60_ _ _ r_ 62_
-    #     start_symbol= None
-    #     step_counter= 1
-
-    #     for i, symbol in  enumerate(melody):
-    #         #handle case in which we have a note/rest.
-    #         if symbol != "_":
-    #             pass
-    #             #ensure we're dealing with note/rest beyond the first one
-    #             if start_symbol is not None:
-    #                 quarter_length_duration= step_duration * step_counter #0.25*4 = 1
-    #                 #handle rest
-    #                 if start_symbol== 'r':
-    #                     m21_event= m21.note.Rest(quarterLenth= quarter_length_duration)
-    #                 #handle note
-    #                 else:
-    #                     m21_event= m21.note.Note(int(start_symbol),quarterLenth=quarter_length_duration)
-
-    #                 stream.append(m21_event)
-
-    #             #reset the step_counter
-    #                 step_counter= 1
-
-    #             start_symbol = symbol
-
-    #         #handle case in which we have a prolongation sign "_"
-    #         else:
-    #             step_counter+= 1
-
-    #     #write the m21 stream to a midifile
-    #     stream.write(format, file_name)
-
-    #     return stream
-
 @app.get("/predict")
 def predict(CH,CK,SN):
     """
@@ -162,11 +167,11 @@ def predict(CH,CK,SN):
     """
     CH_list = CH.split(",")
     # Convert the string values to their corresponding boolean values
-    print("CH_LIST")
-    print(CH_list)
+    # print("CH_LIST")
+    # print(CH_list)
     CH_list = [value == "True" for value in CH_list]
-    print("CH_LIST_BOOLEAN")
-    print(CH_list)
+    # print("CH_LIST_BOOLEAN")
+    # print(CH_list)
 
     CK_list = CK.split(",")
     # Convert the string values to their corresponding boolean values
@@ -177,10 +182,8 @@ def predict(CH,CK,SN):
     SN_list = [value == "True" for value in SN_list]
 
     X = [CH_list,CK_list,SN_list]
-    #print(CH_list)
-    #X = X_dict["X"]
-    print(type(X))
-    print(X)
+
+
     mg = MelodyGenerator(app= FastAPI(), model_origin='mlflow')
     #X= [[True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False],
     #            [True, False, False, False, False, False, False,False,True, False, False, False, False, False, False,False,True, False, False, False, False, False, False,False,True, False, False, False, False, False, False,False],
@@ -199,11 +202,6 @@ def root():
     'greeting': 'Hello to RNN Music Generator'
 }
 
-#X_dict={"CH":"[True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False],
-# "CK":[True,False,False,False,False,False,False,False,True,False,False,False,False,False,False,False,True,False,False,False,False,False,False,False,True,False,False,False,False,False,False,False],
-# "SN":[False,False,False,False,True,False,False,False,False,False,False,False,True,False,False,False,False,False,False,False,True,False,False,False,False,False,False,False,True,False,False,False]}
-#CH="True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False"
-#CK="True,False,False,False,False,False,False,False,True,False,False,False,False,False,False,False,True,False,False,False,False,False,False,False,True,False,False,False,False,False,False,False"
-#SN="False,False,False,False,True,False,False,False,False,False,False,False,True,False,False,False,False,False,False,False,True,False,False,False,False,False,False,False,True,False,False,False"
 
 #http://127.0.0.1:8000/predict?CH=True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False,True,False&CK=True,False,False,False,False,False,False,False,True,False,False,False,False,False,False,False,True,False,False,False,False,False,False,False,True,False,False,False,False,False,False,False&SN=False,False,False,False,True,False,False,False,False,False,False,False,True,False,False,False,False,False,False,False,True,False,False,False,False,False,False,False,True,False,False,False
+#TESTING API
